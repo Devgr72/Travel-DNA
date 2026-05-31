@@ -16,14 +16,17 @@ export async function POST(req: Request) {
       {
         status: 429,
         headers: { "Retry-After": String(Math.ceil(retryAfterMs / 1000)) },
-      }
+      },
     );
   }
 
   // [Security] Validate request body with Zod; reject malformed input with 400
   const parseResult = AnalyzeDnaRequestSchema.safeParse(await req.json().catch(() => null));
   if (!parseResult.success) {
-    return secureJson({ error: "Invalid request", details: parseResult.error.flatten() }, { status: 400 });
+    return secureJson(
+      { error: "Invalid request", details: parseResult.error.flatten() },
+      { status: 400 },
+    );
   }
   const { traits } = parseResult.data;
 
@@ -31,7 +34,8 @@ export async function POST(req: Request) {
     return secureJson({
       analysis: {
         title: "The Urban Explorer",
-        summary: "You thrive in vibrant city energy, seeking out hidden alleys and authentic local experiences.",
+        summary:
+          "You thrive in vibrant city energy, seeking out hidden alleys and authentic local experiences.",
         strengths: ["Adaptability", "Curiosity", "Social stamina"],
       },
     });

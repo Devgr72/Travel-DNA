@@ -14,6 +14,10 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    // Pin workspace root to avoid false lockfile detection warnings
+    root: __dirname,
+  },
   images: {
     remotePatterns: [
       {

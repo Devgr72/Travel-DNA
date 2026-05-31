@@ -37,8 +37,16 @@ export default function ItineraryGenerator({ onGenerate, isLoading }: ItineraryG
     const constraints: Constraints = {};
     if (dailyBudgetUSD) constraints.dailyBudgetUSD = Number(dailyBudgetUSD);
     if (mobility) constraints.mobility = mobility;
-    if (dietary.trim()) constraints.dietary = dietary.split(",").map((s) => s.trim()).filter(Boolean);
-    if (mustAvoid.trim()) constraints.mustAvoid = mustAvoid.split(",").map((s) => s.trim()).filter(Boolean);
+    if (dietary.trim())
+      constraints.dietary = dietary
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    if (mustAvoid.trim())
+      constraints.mustAvoid = mustAvoid
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
 
     onGenerate({ destination, duration, budget, constraints });
   };
@@ -65,7 +73,10 @@ export default function ItineraryGenerator({ onGenerate, isLoading }: ItineraryG
             Where to?
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none" aria-hidden="true">
+            <div
+              className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"
+              aria-hidden="true"
+            >
               <Plane className="h-4 w-4 text-muted-foreground/60" />
             </div>
             <input
@@ -89,7 +100,10 @@ export default function ItineraryGenerator({ onGenerate, isLoading }: ItineraryG
             Duration (Days)
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none" aria-hidden="true">
+            <div
+              className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"
+              aria-hidden="true"
+            >
               <Calendar className="h-4 w-4 text-muted-foreground/60" />
             </div>
             <input
@@ -115,7 +129,10 @@ export default function ItineraryGenerator({ onGenerate, isLoading }: ItineraryG
             Budget Level
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none" aria-hidden="true">
+            <div
+              className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"
+              aria-hidden="true"
+            >
               <DollarSign className="h-4 w-4 text-muted-foreground/60" />
             </div>
             <select
@@ -125,7 +142,9 @@ export default function ItineraryGenerator({ onGenerate, isLoading }: ItineraryG
               onChange={(e) => setBudget(e.target.value)}
               className="block w-full pl-10 pr-4 py-3 border border-card-border rounded-xl bg-background/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all text-sm appearance-none shadow-sm cursor-pointer"
             >
-              <option value="" disabled>Select Budget</option>
+              <option value="" disabled>
+                Select Budget
+              </option>
               <option value="Budget">Budget-friendly</option>
               <option value="Moderate">Moderate</option>
               <option value="Luxury">Luxury</option>
@@ -150,7 +169,10 @@ export default function ItineraryGenerator({ onGenerate, isLoading }: ItineraryG
           </button>
 
           {showConstraints && (
-            <div id="constraints-panel" className="px-4 pb-4 space-y-4 border-t border-card-border pt-4">
+            <div
+              id="constraints-panel"
+              className="px-4 pb-4 space-y-4 border-t border-card-border pt-4"
+            >
               {/* Daily Budget Cap */}
               <div>
                 <label

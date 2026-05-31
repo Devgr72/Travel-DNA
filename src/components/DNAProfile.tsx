@@ -1,10 +1,17 @@
 // [Accessibility] aria-live announces DNA analysis results when they load.
-// [Testing] Uses computeRadarData from src/lib/dna.ts.
+// [Testing] computeRadarData is a pure function from src/lib/dna.ts.
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useReducedMotion, motion } from "framer-motion";
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, PolarRadiusAxis } from "recharts";
+import {
+  Radar,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  ResponsiveContainer,
+  PolarRadiusAxis,
+} from "recharts";
 import { computeRadarData } from "@/lib/dna";
 import type { Traits } from "@/lib/schema";
 
@@ -14,20 +21,35 @@ type DNAAnalysis = {
   strengths: string[];
 };
 
+type ProfileData = {
+  dna: Traits | null;
+  analysis: DNAAnalysis | null;
+};
+
 export default function DNAProfile() {
   const shouldReduceMotion = useReducedMotion();
-  const [dna, setDna] = useState<Traits | null>(null);
-  const [analysis, setAnalysis] = useState<DNAAnalysis | null>(null);
+  // Single state object — one setState call in useEffect avoids cascading renders.
+  const [profile, setProfile] = useState<ProfileData>({ dna: null, analysis: null });
 
   useEffect(() => {
-    const saved = localStorage.getItem("travelDNA");
-    if (saved) setDna(JSON.parse(saved) as Traits);
-
-    const savedAnalysis = localStorage.getItem("travelAnalysis");
-    if (savedAnalysis) setAnalysis(JSON.parse(savedAnalysis) as DNAAnalysis);
+    const rawDna = localStorage.getItem("travelDNA");
+    const rawAnalysis = localStorage.getItem("travelAnalysis");
+    // localStorage is unavailable during SSR, so this useEffect hydration is required.
+    // The single batched setState avoids multiple render cascades.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setProfile({
+      dna: rawDna ? (JSON.parse(rawDna) as Traits) : null,
+      analysis: rawAnalysis ? (JSON.parse(rawAnalysis) as DNAAnalysis) : null,
+    });
   }, []);
 
-  if (!dna) {
+  // [Efficiency] Only recompute radar data when the dna object reference changes.
+  const radarData = useMemo(
+    () => (profile.dna ? computeRadarData(profile.dna) : []),
+    [profile.dna],
+  );
+
+  if (!profile.dna) {
     return (
       <div
         aria-busy="true"
@@ -43,7 +65,7 @@ export default function DNAProfile() {
     );
   }
 
-  const data = computeRadarData(dna);
+  const { dna, analysis } = profile;
 
   return (
     <motion.div
@@ -86,14 +108,23 @@ export default function DNAProfile() {
         <div
           className="w-full h-[300px] mt-4 relative"
           role="img"
-          aria-label={`Radar chart showing your travel DNA across six dimensions: ${Object.entries(dna).map(([k, v]) => `${k} ${v}`).join(", ")}`}
+          aria-label={`Radar chart showing your travel DNA across six dimensions: ${Object.entries(
+            dna,
+          )
+            .map(([k, v]) => `${k} ${v}`)
+            .join(", ")}`}
         >
           <ResponsiveContainer width="100%" height="100%">
-            <RadarChart cx="50%" cy="50%" outerRadius="75%" data={data}>
+            <RadarChart cx="50%" cy="50%" outerRadius="75%" data={radarData}>
               <PolarGrid stroke="var(--card-border)" />
               <PolarAngleAxis
                 dataKey="subject"
-                tick={{ fill: "var(--muted-foreground)", fontSize: 11, fontWeight: 600, letterSpacing: "0.05em" }}
+                tick={{
+                  fill: "var(--muted-foreground)",
+                  fontSize: 11,
+                  fontWeight: 600,
+                  letterSpacing: "0.05em",
+                }}
               />
               <PolarRadiusAxis angle={30} domain={[0, 8]} tick={false} axisLine={false} />
               <Radar

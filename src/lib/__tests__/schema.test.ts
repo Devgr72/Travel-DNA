@@ -15,8 +15,13 @@ describe("TraitsSchema", () => {
   it("accepts valid trait objects", () => {
     expect(
       TraitsSchema.safeParse({
-        Adventure: 5, Food: 3, Culture: 8, Luxury: 1, Social: 2, Exploration: 6,
-      }).success
+        Adventure: 5,
+        Food: 3,
+        Culture: 8,
+        Luxury: 1,
+        Social: 2,
+        Exploration: 6,
+      }).success,
     ).toBe(true);
   });
 
@@ -37,7 +42,7 @@ describe("ConstraintsSchema", () => {
         mobility: "limited",
         dietary: ["vegetarian"],
         mustAvoid: ["casinos"],
-      }).success
+      }).success,
     ).toBe(true);
   });
 
@@ -55,7 +60,7 @@ describe("AnalyzeDnaRequestSchema", () => {
     expect(
       AnalyzeDnaRequestSchema.safeParse({
         traits: { Adventure: 5, Food: 3, Culture: 8, Luxury: 1, Social: 2, Exploration: 6 },
-      }).success
+      }).success,
     ).toBe(true);
   });
 
@@ -81,7 +86,9 @@ describe("GenerateTripRequestSchema", () => {
   });
 
   it("rejects invalid budget values", () => {
-    expect(GenerateTripRequestSchema.safeParse({ ...valid, budget: "Expensive" }).success).toBe(false);
+    expect(GenerateTripRequestSchema.safeParse({ ...valid, budget: "Expensive" }).success).toBe(
+      false,
+    );
   });
 
   it("accepts null traits (no quiz taken)", () => {
@@ -90,7 +97,8 @@ describe("GenerateTripRequestSchema", () => {
 
   it("accepts optional constraints", () => {
     expect(
-      GenerateTripRequestSchema.safeParse({ ...valid, constraints: { dailyBudgetUSD: 200 } }).success
+      GenerateTripRequestSchema.safeParse({ ...valid, constraints: { dailyBudgetUSD: 200 } })
+        .success,
     ).toBe(true);
   });
 });
@@ -112,7 +120,7 @@ describe("ActivitySchema", () => {
 
   it("accepts optional satisfies array", () => {
     expect(
-      ActivitySchema.safeParse({ ...validActivity, satisfies: ["Adventure preference"] }).success
+      ActivitySchema.safeParse({ ...validActivity, satisfies: ["Adventure preference"] }).success,
     ).toBe(true);
   });
 });
@@ -124,22 +132,34 @@ describe("ItineraryDataSchema", () => {
 
   it("rejects days with empty activities", () => {
     expect(
-      ItineraryDataSchema.safeParse({ days: [{ day: 1, title: "Day 1", activities: [] }] }).success
+      ItineraryDataSchema.safeParse({ days: [{ day: 1, title: "Day 1", activities: [] }] }).success,
     ).toBe(false);
   });
 
   it("accepts valid itinerary data", () => {
     expect(
       ItineraryDataSchema.safeParse({
-        days: [{ day: 1, title: "Day 1", activities: [{ time: "09:00", description: "Walk", type: "Exploration" }] }],
-      }).success
+        days: [
+          {
+            day: 1,
+            title: "Day 1",
+            activities: [{ time: "09:00", description: "Walk", type: "Exploration" }],
+          },
+        ],
+      }).success,
     ).toBe(true);
   });
 });
 
 describe("AdaptItineraryRequestSchema", () => {
   const validItinerary = {
-    days: [{ day: 1, title: "Day 1", activities: [{ time: "09:00", description: "Walk", type: "Exploration" as const }] }],
+    days: [
+      {
+        day: 1,
+        title: "Day 1",
+        activities: [{ time: "09:00", description: "Walk", type: "Exploration" as const }],
+      },
+    ],
   };
 
   it("accepts valid adapt request", () => {
@@ -147,13 +167,14 @@ describe("AdaptItineraryRequestSchema", () => {
       AdaptItineraryRequestSchema.safeParse({
         currentItineraryData: validItinerary,
         context: "Heavy rain started",
-      }).success
+      }).success,
     ).toBe(true);
   });
 
   it("rejects empty context string", () => {
     expect(
-      AdaptItineraryRequestSchema.safeParse({ currentItineraryData: validItinerary, context: "" }).success
+      AdaptItineraryRequestSchema.safeParse({ currentItineraryData: validItinerary, context: "" })
+        .success,
     ).toBe(false);
   });
 
@@ -162,7 +183,7 @@ describe("AdaptItineraryRequestSchema", () => {
       AdaptItineraryRequestSchema.safeParse({
         currentItineraryData: validItinerary,
         context: "x".repeat(1001),
-      }).success
+      }).success,
     ).toBe(false);
   });
 });
@@ -172,13 +193,13 @@ describe("DnaAnalysisResponseSchema", () => {
     expect(
       DnaAnalysisResponseSchema.safeParse({
         analysis: { title: "Urban Explorer", summary: "You love cities.", strengths: ["Curious"] },
-      }).success
+      }).success,
     ).toBe(true);
   });
 
   it("rejects response missing summary", () => {
     expect(
-      DnaAnalysisResponseSchema.safeParse({ analysis: { title: "X", strengths: ["A"] } }).success
+      DnaAnalysisResponseSchema.safeParse({ analysis: { title: "X", strengths: ["A"] } }).success,
     ).toBe(false);
   });
 });
@@ -194,7 +215,7 @@ describe("TripDataResponseSchema", () => {
         personalityAnalysis: { title: "X", summary: "Y", strengths: ["A"] },
         wowFactor: { hiddenGems: [], touristTrapsToAvoid: [] },
         itinerary: { days: [{ day: 1, title: "D1", activities: [] }] },
-      }).success
+      }).success,
     ).toBe(false);
   });
 });

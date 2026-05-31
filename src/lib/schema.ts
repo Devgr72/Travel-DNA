@@ -98,12 +98,8 @@ export const TripDataResponseSchema = z.object({
     strengths: z.array(z.string()).min(1).max(5),
   }),
   wowFactor: z.object({
-    hiddenGems: z.array(
-      z.object({ name: z.string(), description: z.string() })
-    ),
-    touristTrapsToAvoid: z.array(
-      z.object({ name: z.string(), reason: z.string() })
-    ),
+    hiddenGems: z.array(z.object({ name: z.string(), description: z.string() })),
+    touristTrapsToAvoid: z.array(z.object({ name: z.string(), reason: z.string() })),
   }),
   itinerary: ItineraryDataSchema,
 });

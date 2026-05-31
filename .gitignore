@@ -37,6 +37,12 @@ yarn-error.log*
 .env.development
 .env.production
 
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
 # vercel
 .vercel
 

@@ -10,12 +10,24 @@ import type { Constraints } from "@/lib/schema";
 function buildConstraintsClause(c: Constraints | undefined): string {
   if (!c) return "";
   const parts: string[] = [];
-  if (c.dailyBudgetUSD) parts.push(`Daily budget cap: $${c.dailyBudgetUSD} USD (label every activity with estimatedCostUSD).`);
-  if (c.mobility === "limited") parts.push("The traveler has limited mobility — avoid activities requiring extensive walking or stairs.");
-  if (c.mobility === "wheelchair") parts.push("The traveler uses a wheelchair — all venues must be fully wheelchair accessible.");
-  if (c.dietary?.length) parts.push(`Dietary restrictions: ${c.dietary.join(", ")} — all Food activities must respect these.`);
+  if (c.dailyBudgetUSD)
+    parts.push(
+      `Daily budget cap: $${c.dailyBudgetUSD} USD (label every activity with estimatedCostUSD).`,
+    );
+  if (c.mobility === "limited")
+    parts.push(
+      "The traveler has limited mobility — avoid activities requiring extensive walking or stairs.",
+    );
+  if (c.mobility === "wheelchair")
+    parts.push("The traveler uses a wheelchair — all venues must be fully wheelchair accessible.");
+  if (c.dietary?.length)
+    parts.push(
+      `Dietary restrictions: ${c.dietary.join(", ")} — all Food activities must respect these.`,
+    );
   if (c.mustAvoid?.length) parts.push(`Must avoid: ${c.mustAvoid.join(", ")}.`);
-  return parts.length ? `\nCONSTRAINTS (respect these; surface a constraintWarning string when a constraint cannot be fully met — NEVER fabricate a fit):\n${parts.join("\n")}` : "";
+  return parts.length
+    ? `\nCONSTRAINTS (respect these; surface a constraintWarning string when a constraint cannot be fully met — NEVER fabricate a fit):\n${parts.join("\n")}`
+    : "";
 }
 
 export async function POST(req: Request) {
@@ -26,14 +38,17 @@ export async function POST(req: Request) {
   if (!allowed) {
     return secureJson(
       { error: "Too many requests" },
-      { status: 429, headers: { "Retry-After": String(Math.ceil(retryAfterMs / 1000)) } }
+      { status: 429, headers: { "Retry-After": String(Math.ceil(retryAfterMs / 1000)) } },
     );
   }
 
   // [Security] Validate request body with Zod
   const parseResult = GenerateTripRequestSchema.safeParse(await req.json().catch(() => null));
   if (!parseResult.success) {
-    return secureJson({ error: "Invalid request", details: parseResult.error.flatten() }, { status: 400 });
+    return secureJson(
+      { error: "Invalid request", details: parseResult.error.flatten() },
+      { status: 400 },
+    );
   }
   const { destination, duration, budget, traits, constraints } = parseResult.data;
 
@@ -42,13 +57,20 @@ export async function POST(req: Request) {
       tripData: {
         personalityAnalysis: {
           title: "The Urban Explorer",
-          summary: "You thrive in vibrant city energy, seeking hidden alleys and authentic local experiences.",
+          summary:
+            "You thrive in vibrant city energy, seeking hidden alleys and authentic local experiences.",
           strengths: ["Adaptability", "Curiosity", "Social stamina"],
         },
         wowFactor: {
           hiddenGems: [
-            { name: "Local Artist Market", description: "A non-touristy market where actual locals shop." },
-            { name: "Underground Cafe", description: "Hard to find, but offers the best local brew." },
+            {
+              name: "Local Artist Market",
+              description: "A non-touristy market where actual locals shop.",
+            },
+            {
+              name: "Underground Cafe",
+              description: "Hard to find, but offers the best local brew.",
+            },
           ],
           touristTrapsToAvoid: [
             { name: "Main Square Restaurants", reason: "Overpriced and inauthentic food." },

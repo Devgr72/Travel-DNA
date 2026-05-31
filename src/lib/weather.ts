@@ -28,10 +28,7 @@ export function indoorAlternativeFor(outdoorType: string): string {
  * Swaps outdoor activities to indoor equivalents.
  * Does not regenerate the whole day; only affected items are touched.
  */
-export function swapOutdoorToIndoor(
-  activities: Activity[],
-  weatherContext: string
-): Activity[] {
+export function swapOutdoorToIndoor(activities: Activity[], weatherContext: string): Activity[] {
   return activities.map((a) => {
     if (!isOutdoorActivity(a)) return a;
     return {

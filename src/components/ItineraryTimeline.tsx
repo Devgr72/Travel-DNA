@@ -3,7 +3,17 @@
 "use client";
 
 import { useReducedMotion, motion } from "framer-motion";
-import { MapPin, Utensils, Moon, Navigation, Landmark, Sun, Heart, Tent, AlertTriangle } from "lucide-react";
+import {
+  MapPin,
+  Utensils,
+  Moon,
+  Navigation,
+  Landmark,
+  Sun,
+  Heart,
+  Tent,
+  AlertTriangle,
+} from "lucide-react";
 import type { Activity, ItineraryData } from "@/lib/schema";
 
 export type { ItineraryData };
@@ -20,7 +30,9 @@ const TYPE_ICON_MAP: Partial<Record<string, React.ComponentType<{ className?: st
 
 function ActivityIcon({ type }: { type: string }) {
   const Icon = TYPE_ICON_MAP[type.toLowerCase()] ?? Sun;
-  return <Icon className="w-4 h-4 text-muted-foreground group-hover:text-primary-foreground transition-colors" />;
+  return (
+    <Icon className="w-4 h-4 text-muted-foreground group-hover:text-primary-foreground transition-colors" />
+  );
 }
 
 function ActivityCard({ activity }: { activity: Activity }) {
@@ -80,7 +92,10 @@ function ActivityCard({ activity }: { activity: Activity }) {
               role="alert"
               className="flex items-start gap-2 mt-3 p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-lg"
             >
-              <AlertTriangle className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
+              <AlertTriangle
+                className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5"
+                aria-hidden="true"
+              />
               <p className="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
                 {activity.constraintWarning}
               </p>
@@ -111,8 +126,12 @@ export default function ItineraryTimeline({ data }: { data: ItineraryData }) {
             aria-hidden="true"
             className="absolute -left-[25px] md:-left-[29px] top-0 bg-background w-12 h-12 md:w-14 md:h-14 rounded-full flex flex-col items-center justify-center border border-card-border shadow-sm z-10"
           >
-            <span className="text-[9px] md:text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Day</span>
-            <span className="text-base md:text-lg font-extrabold text-foreground leading-none">{day.day}</span>
+            <span className="text-[9px] md:text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
+              Day
+            </span>
+            <span className="text-base md:text-lg font-extrabold text-foreground leading-none">
+              {day.day}
+            </span>
           </div>
 
           <div className="pl-10 md:pl-12 pt-1">
@@ -125,7 +144,7 @@ export default function ItineraryTimeline({ data }: { data: ItineraryData }) {
                 <motion.li
                   initial={shouldReduceMotion ? {} : { opacity: 0, y: 10 }}
                   animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
-                  transition={{ delay: (dayIdx * 0.1) + (actIdx * 0.05), ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ delay: dayIdx * 0.1 + actIdx * 0.05, ease: [0.16, 1, 0.3, 1] }}
                   key={actIdx}
                   className="relative group"
                 >

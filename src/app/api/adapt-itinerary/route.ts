@@ -14,14 +14,17 @@ export async function POST(req: Request) {
   if (!allowed) {
     return secureJson(
       { error: "Too many requests" },
-      { status: 429, headers: { "Retry-After": String(Math.ceil(retryAfterMs / 1000)) } }
+      { status: 429, headers: { "Retry-After": String(Math.ceil(retryAfterMs / 1000)) } },
     );
   }
 
   // [Security] Validate request body with Zod
   const parseResult = AdaptItineraryRequestSchema.safeParse(await req.json().catch(() => null));
   if (!parseResult.success) {
-    return secureJson({ error: "Invalid request", details: parseResult.error.flatten() }, { status: 400 });
+    return secureJson(
+      { error: "Invalid request", details: parseResult.error.flatten() },
+      { status: 400 },
+    );
   }
   const { currentItineraryData, context } = parseResult.data;
 

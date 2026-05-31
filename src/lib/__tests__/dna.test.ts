@@ -35,7 +35,14 @@ describe("normalizeDnaScores", () => {
   });
 
   it("handles all-zero traits without throwing", () => {
-    const zero: Traits = { Adventure: 0, Food: 0, Culture: 0, Luxury: 0, Social: 0, Exploration: 0 };
+    const zero: Traits = {
+      Adventure: 0,
+      Food: 0,
+      Culture: 0,
+      Luxury: 0,
+      Social: 0,
+      Exploration: 0,
+    };
     const result = normalizeDnaScores(zero);
     expect(Object.values(result).every((v) => v === 0)).toBe(true);
   });
@@ -69,13 +76,27 @@ describe("getDominantTrait", () => {
   });
 
   it("returns a valid trait key even when all scores are equal", () => {
-    const flat: Traits = { Adventure: 5, Food: 5, Culture: 5, Luxury: 5, Social: 5, Exploration: 5 };
+    const flat: Traits = {
+      Adventure: 5,
+      Food: 5,
+      Culture: 5,
+      Luxury: 5,
+      Social: 5,
+      Exploration: 5,
+    };
     const result = getDominantTrait(flat);
     expect(Object.keys(flat)).toContain(result);
   });
 
   it("handles negative scores correctly", () => {
-    const neg: Traits = { Adventure: -5, Food: -3, Culture: -1, Luxury: -8, Social: -2, Exploration: -4 };
+    const neg: Traits = {
+      Adventure: -5,
+      Food: -3,
+      Culture: -1,
+      Luxury: -8,
+      Social: -2,
+      Exploration: -4,
+    };
     expect(getDominantTrait(neg)).toBe("Culture");
   });
 });
@@ -95,7 +116,7 @@ describe("scoreTraitAlignment", () => {
     const highCulture: Traits = { ...baseTrait, Culture: 20 };
     const lowCulture: Traits = { ...baseTrait, Culture: 0 };
     expect(scoreTraitAlignment(highCulture, "culture")).toBeGreaterThan(
-      scoreTraitAlignment(lowCulture, "culture")
+      scoreTraitAlignment(lowCulture, "culture"),
     );
   });
 

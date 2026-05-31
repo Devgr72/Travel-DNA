@@ -51,7 +51,7 @@ export function normalizeItinerary(raw: unknown): ItineraryData | null {
 export function filterAffordableActivities(
   day: Day,
   budget: BudgetLevel,
-  dailyBudgetUSD: number
+  dailyBudgetUSD: number,
 ): Activity[] {
   let spent = 0;
   return day.activities.filter((a) => {
@@ -66,6 +66,6 @@ export function filterAffordableActivities(
 export function getBusiestDay(itinerary: ItineraryData): Day | null {
   if (itinerary.days.length === 0) return null;
   return itinerary.days.reduce((best, cur) =>
-    cur.activities.length > best.activities.length ? cur : best
+    cur.activities.length > best.activities.length ? cur : best,
   );
 }

@@ -4,7 +4,16 @@
 
 import { useState } from "react";
 import { useReducedMotion, motion, AnimatePresence } from "framer-motion";
-import { CloudRain, Sun, CloudLightning, Snowflake, Send, RefreshCw, Sparkles, AlertOctagon } from "lucide-react";
+import {
+  CloudRain,
+  Sun,
+  CloudLightning,
+  Snowflake,
+  Send,
+  RefreshCw,
+  Sparkles,
+  AlertOctagon,
+} from "lucide-react";
 import ItineraryTimeline, { type ItineraryData } from "./ItineraryTimeline";
 
 export type TripData = {
@@ -25,10 +34,34 @@ type AdaptiveItineraryProps = {
 };
 
 const weatherSimulations = [
-  { label: "Sunny & Hot", icon: Sun, color: "text-amber-500", bg: "bg-amber-500/10", context: "A sudden heatwave hit. We need shade, AC, and lots of water-based activities." },
-  { label: "Heavy Rain", icon: CloudRain, color: "text-blue-500", bg: "bg-blue-500/10", context: "It started raining heavily. Move all activities indoors immediately." },
-  { label: "Thunderstorm", icon: CloudLightning, color: "text-purple-500", bg: "bg-purple-500/10", context: "Severe thunderstorm warning. Need to stay at the hotel or very close by." },
-  { label: "Snow", icon: Snowflake, color: "text-slate-500", bg: "bg-slate-500/10", context: "Unexpected snowfall! Optimize for cozy cafes, fireplaces, and beautiful snowy walks." },
+  {
+    label: "Sunny & Hot",
+    icon: Sun,
+    color: "text-amber-500",
+    bg: "bg-amber-500/10",
+    context: "A sudden heatwave hit. We need shade, AC, and lots of water-based activities.",
+  },
+  {
+    label: "Heavy Rain",
+    icon: CloudRain,
+    color: "text-blue-500",
+    bg: "bg-blue-500/10",
+    context: "It started raining heavily. Move all activities indoors immediately.",
+  },
+  {
+    label: "Thunderstorm",
+    icon: CloudLightning,
+    color: "text-purple-500",
+    bg: "bg-purple-500/10",
+    context: "Severe thunderstorm warning. Need to stay at the hotel or very close by.",
+  },
+  {
+    label: "Snow",
+    icon: Snowflake,
+    color: "text-slate-500",
+    bg: "bg-slate-500/10",
+    context: "Unexpected snowfall! Optimize for cozy cafes, fireplaces, and beautiful snowy walks.",
+  },
 ];
 
 export default function AdaptiveItinerary({ initialTripData }: AdaptiveItineraryProps) {
@@ -51,7 +84,7 @@ export default function AdaptiveItinerary({ initialTripData }: AdaptiveItinerary
       });
 
       if (!response.ok) throw new Error("Failed to adapt");
-      const result = await response.json() as { updatedItineraryData: ItineraryData };
+      const result = (await response.json()) as { updatedItineraryData: ItineraryData };
 
       setTripData((prev) => ({ ...prev, itinerary: result.updatedItineraryData }));
       setAdaptationInput("");
@@ -87,7 +120,9 @@ export default function AdaptiveItinerary({ initialTripData }: AdaptiveItinerary
             {tripData.wowFactor?.hiddenGems?.map((gem, idx) => (
               <li key={idx} className="border-l-2 border-amber-500/30 pl-3">
                 <h4 className="text-sm font-bold text-foreground">{gem.name}</h4>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{gem.description}</p>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                  {gem.description}
+                </p>
               </li>
             ))}
           </ul>
@@ -130,7 +165,11 @@ export default function AdaptiveItinerary({ initialTripData }: AdaptiveItinerary
           Adaptive Intelligence Engine
         </h3>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5" role="group" aria-label="Simulate weather change">
+        <div
+          className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5"
+          role="group"
+          aria-label="Simulate weather change"
+        >
           {weatherSimulations.map((sim, idx) => (
             <button
               key={idx}
@@ -139,7 +178,10 @@ export default function AdaptiveItinerary({ initialTripData }: AdaptiveItinerary
               aria-label={`Simulate ${sim.label}: ${sim.context}`}
               className="flex flex-col items-center justify-center gap-2 p-3 bg-muted/50 hover:bg-muted border border-card-border rounded-xl transition-all disabled:opacity-50 group cursor-pointer focus-visible:ring-2 focus-visible:ring-primary"
             >
-              <div className={`p-2 rounded-lg ${sim.bg} group-hover:scale-105 transition-transform`} aria-hidden="true">
+              <div
+                className={`p-2 rounded-lg ${sim.bg} group-hover:scale-105 transition-transform`}
+                aria-hidden="true"
+              >
                 <sim.icon className={`w-5 h-5 ${sim.color}`} />
               </div>
               <span className="text-xs font-semibold text-foreground">{sim.label}</span>
@@ -189,8 +231,12 @@ export default function AdaptiveItinerary({ initialTripData }: AdaptiveItinerary
             >
               <div className="flex flex-col items-center gap-4 bg-card p-8 rounded-2xl border border-card-border shadow-xl">
                 <RefreshCw className="w-8 h-8 text-primary animate-spin" aria-hidden="true" />
-                <span className="text-foreground font-bold text-lg tracking-tight">Recalibrating Timeline…</span>
-                <p className="text-muted-foreground text-sm">Injecting new variables into the DNA model</p>
+                <span className="text-foreground font-bold text-lg tracking-tight">
+                  Recalibrating Timeline…
+                </span>
+                <p className="text-muted-foreground text-sm">
+                  Injecting new variables into the DNA model
+                </p>
               </div>
             </motion.div>
           )}

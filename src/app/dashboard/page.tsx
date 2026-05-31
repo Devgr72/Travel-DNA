@@ -1,8 +1,8 @@
-// [Code Quality] No `any` types; fully typed with TripData.
-// [Accessibility] Semantic section landmark with aria-label.
+// [Code Quality] No `any` types; typed with TripData from AdaptiveItinerary.
+// [Accessibility] Semantic landmarks: header, aside, section.
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import DNAProfile from "@/components/DNAProfile";
 import ItineraryGenerator from "@/components/ItineraryGenerator";
 import AdaptiveItinerary, { type TripData } from "@/components/AdaptiveItinerary";
@@ -19,11 +19,12 @@ export default function Dashboard() {
   const [tripData, setTripData] = useState<TripData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleGenerate = async (data: GeneratePayload) => {
+  // [Efficiency] Stable callback reference — does not cause ItineraryGenerator to re-render.
+  const handleGenerate = useCallback(async (data: GeneratePayload) => {
     setIsLoading(true);
     try {
       const rawTraits = localStorage.getItem("travelDNA");
-      const traits = rawTraits ? JSON.parse(rawTraits) as unknown : null;
+      const traits = rawTraits ? (JSON.parse(rawTraits) as unknown) : null;
 
       const response = await fetch("/api/generate-trip", {
         method: "POST",
@@ -32,15 +33,15 @@ export default function Dashboard() {
       });
 
       if (!response.ok) throw new Error("Failed to generate");
-      const result = await response.json() as { tripData: TripData };
+      const result = (await response.json()) as { tripData: TripData };
       setTripData(result.tripData);
     } catch (error) {
       console.error(error);
-      alert("Error generating trip. Did you set GEMINI_API_KEY?");
+      alert("Error generating trip. Did you set GEMINI_API_KEY in .env.local?");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   return (
     <div className="min-h-screen px-4 py-12 relative overflow-hidden bg-background">
@@ -68,10 +69,12 @@ export default function Dashboard() {
                 >
                   <span className="text-3xl opacity-50">✦</span>
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-2 tracking-tight">Awaiting Parameters</h3>
+                <h3 className="text-xl font-semibold text-foreground mb-2 tracking-tight">
+                  Awaiting Parameters
+                </h3>
                 <p className="text-muted-foreground max-w-md text-sm leading-relaxed">
-                  Enter your destination details to synthesize your behavioral profile into a dynamic,
-                  AI-generated travel experience.
+                  Enter your destination details to synthesize your behavioral profile into a
+                  dynamic, AI-generated travel experience.
                 </p>
               </div>
             )}

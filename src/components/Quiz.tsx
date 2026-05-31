@@ -20,16 +20,25 @@ const questions = [
     question: "It's 8:00 AM on your vacation. Where are you?",
     options: [
       { text: "Still asleep, vacation is for resting.", traits: { Luxury: 2, Adventure: -1 } },
-      { text: "Already out the door, grabbing coffee and exploring.", traits: { Exploration: 2, Adventure: 1 } },
+      {
+        text: "Already out the door, grabbing coffee and exploring.",
+        traits: { Exploration: 2, Adventure: 1 },
+      },
       { text: "Waking up slowly with a nice breakfast.", traits: { Food: 1, Luxury: 1 } },
-      { text: "Heading out for an early morning hike or run.", traits: { Adventure: 2, Exploration: 1 } },
+      {
+        text: "Heading out for an early morning hike or run.",
+        traits: { Adventure: 2, Exploration: 1 },
+      },
     ],
   },
   {
     question: "How do you prefer to experience local food?",
     options: [
       { text: "Finding the highest-rated fine dining restaurant.", traits: { Luxury: 2, Food: 1 } },
-      { text: "Scouring street food markets for authentic bites.", traits: { Food: 2, Exploration: 1 } },
+      {
+        text: "Scouring street food markets for authentic bites.",
+        traits: { Food: 2, Exploration: 1 },
+      },
       { text: "A mix of nice restaurants and casual cafes.", traits: { Food: 1 } },
       { text: "Cooking classes to learn the local cuisine.", traits: { Culture: 2, Food: 1 } },
     ],
@@ -48,7 +57,10 @@ const questions = [
     options: [
       { text: "I map out everything in advance.", traits: { Culture: 1, Luxury: 1 } },
       { text: "I just walk and see where the wind takes me.", traits: { Exploration: 2 } },
-      { text: "I use local public transit to feel like a local.", traits: { Culture: 1, Exploration: 1 } },
+      {
+        text: "I use local public transit to feel like a local.",
+        traits: { Culture: 1, Exploration: 1 },
+      },
       { text: "I prefer taking taxis or private cars everywhere.", traits: { Luxury: 2 } },
     ],
   },
@@ -66,7 +78,10 @@ const questions = [
     options: [
       { text: "A 5-star hotel with all amenities.", traits: { Luxury: 2 } },
       { text: "A boutique hotel with local charm.", traits: { Culture: 1, Luxury: 1 } },
-      { text: "A cozy Airbnb in a residential neighborhood.", traits: { Exploration: 1, Culture: 1 } },
+      {
+        text: "A cozy Airbnb in a residential neighborhood.",
+        traits: { Exploration: 1, Culture: 1 },
+      },
       { text: "A hostel or camping out.", traits: { Adventure: 1, Social: 1 } },
     ],
   },
@@ -82,7 +97,10 @@ const questions = [
   {
     question: "If you had an unexpected free day, you would:",
     options: [
-      { text: "Go on a spontaneous day trip to a nearby town.", traits: { Exploration: 2, Adventure: 1 } },
+      {
+        text: "Go on a spontaneous day trip to a nearby town.",
+        traits: { Exploration: 2, Adventure: 1 },
+      },
       { text: "Book a high-end spa treatment.", traits: { Luxury: 2 } },
       { text: "Spend the entire day cafe-hopping and trying foods.", traits: { Food: 2 } },
       { text: "Visit cultural landmarks you missed.", traits: { Culture: 2 } },
@@ -93,14 +111,23 @@ const questions = [
     options: [
       { text: "Multiple elegant outfits for dinners out.", traits: { Luxury: 2 } },
       { text: "Hiking boots and a waterproof jacket.", traits: { Adventure: 2 } },
-      { text: "A good camera and comfortable walking shoes.", traits: { Exploration: 2, Culture: 1 } },
-      { text: "Just the basics, I'll buy what I need there.", traits: { Exploration: 1, Social: 1 } },
+      {
+        text: "A good camera and comfortable walking shoes.",
+        traits: { Exploration: 2, Culture: 1 },
+      },
+      {
+        text: "Just the basics, I'll buy what I need there.",
+        traits: { Exploration: 1, Social: 1 },
+      },
     ],
   },
   {
     question: "The best part about traveling is:",
     options: [
-      { text: "Discovering completely unfamiliar ways of life.", traits: { Culture: 2, Exploration: 1 } },
+      {
+        text: "Discovering completely unfamiliar ways of life.",
+        traits: { Culture: 2, Exploration: 1 },
+      },
       { text: "Tasting unique flavors you can't get at home.", traits: { Food: 2 } },
       { text: "The thrill of stepping out of your comfort zone.", traits: { Adventure: 2 } },
       { text: "Escaping stress and being pampered.", traits: { Luxury: 2 } },
@@ -113,7 +140,12 @@ export default function Quiz() {
   const shouldReduceMotion = useReducedMotion();
   const [currentStep, setCurrentStep] = useState(0);
   const [scores, setScores] = useState<Traits>({
-    Adventure: 0, Food: 0, Culture: 0, Luxury: 0, Social: 0, Exploration: 0,
+    Adventure: 0,
+    Food: 0,
+    Culture: 0,
+    Luxury: 0,
+    Social: 0,
+    Exploration: 0,
   });
   const [isCalculating, setIsCalculating] = useState(false);
 
@@ -145,7 +177,7 @@ export default function Quiz() {
         body: JSON.stringify({ traits: scores }),
       });
       if (response.ok) {
-        const { analysis } = await response.json() as { analysis: unknown };
+        const { analysis } = (await response.json()) as { analysis: unknown };
         localStorage.setItem("travelAnalysis", JSON.stringify(analysis));
       }
     } catch (e) {
@@ -182,7 +214,7 @@ export default function Quiz() {
   }
 
   const question = questions[currentStep];
-  const progress = ((currentStep) / questions.length) * 100;
+  const progress = (currentStep / questions.length) * 100;
   const progressId = "quiz-progress";
 
   return (
@@ -193,7 +225,9 @@ export default function Quiz() {
           id={progressId}
           className="flex justify-between text-xs text-muted-foreground mb-3 font-semibold tracking-wide uppercase"
         >
-          <span>Question {currentStep + 1} / {questions.length}</span>
+          <span>
+            Question {currentStep + 1} / {questions.length}
+          </span>
           <span aria-hidden="true">{Math.round(progress)}%</span>
         </div>
         <div
@@ -206,9 +240,11 @@ export default function Quiz() {
         >
           <motion.div
             className="h-full bg-primary"
-            initial={{ width: `${((currentStep) / questions.length) * 100}%` }}
+            initial={{ width: `${(currentStep / questions.length) * 100}%` }}
             animate={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}
-            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            transition={
+              shouldReduceMotion ? { duration: 0 } : { duration: 0.5, ease: [0.16, 1, 0.3, 1] }
+            }
           />
         </div>
       </div>

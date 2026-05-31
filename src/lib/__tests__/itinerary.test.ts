@@ -24,13 +24,13 @@ describe("estimateActivityCost", () => {
 
   it("Luxury tier costs more than Budget tier", () => {
     expect(estimateActivityCost(adventure, "Luxury")).toBeGreaterThan(
-      estimateActivityCost(adventure, "Budget")
+      estimateActivityCost(adventure, "Budget"),
     );
   });
 
   it("Adventure type has higher weight than Logistics type", () => {
     expect(estimateActivityCost(adventure, "Moderate")).toBeGreaterThan(
-      estimateActivityCost(logistics, "Moderate")
+      estimateActivityCost(logistics, "Moderate"),
     );
   });
 });
@@ -39,7 +39,7 @@ describe("estimateDayCost", () => {
   it("sums all activity costs for the day", () => {
     const sum = [food, adventure, logistics].reduce(
       (acc, a) => acc + estimateActivityCost(a, "Budget"),
-      0
+      0,
     );
     expect(estimateDayCost(day1, "Budget")).toBe(sum);
   });
@@ -82,7 +82,13 @@ describe("normalizeItinerary", () => {
 
   it("returns null when days contain invalid activity types", () => {
     const malformed = {
-      days: [{ day: 1, title: "X", activities: [{ time: "9am", description: "swim", type: "INVALID_TYPE" }] }],
+      days: [
+        {
+          day: 1,
+          title: "X",
+          activities: [{ time: "9am", description: "swim", type: "INVALID_TYPE" }],
+        },
+      ],
     };
     expect(normalizeItinerary(malformed)).toBeNull();
   });

@@ -17,7 +17,9 @@ export function normalizeDnaScores(raw: Traits, min = -10, max = 20): Traits {
 }
 
 /** Builds the recharts-compatible radar data array. */
-export function computeRadarData(traits: Traits): { subject: string; A: number; fullMark: number }[] {
+export function computeRadarData(
+  traits: Traits,
+): { subject: string; A: number; fullMark: number }[] {
   return (Object.entries(traits) as [TraitKey, number][]).map(([subject, A]) => ({
     subject,
     A,
@@ -28,7 +30,7 @@ export function computeRadarData(traits: Traits): { subject: string; A: number; 
 /** Returns the trait with the highest score; ties broken alphabetically. */
 export function getDominantTrait(traits: Traits): TraitKey {
   return (Object.entries(traits) as [TraitKey, number][]).reduce((best, cur) =>
-    cur[1] > best[1] ? cur : best
+    cur[1] > best[1] ? cur : best,
   )[0];
 }
 
