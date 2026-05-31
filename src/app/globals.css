@@ -22,6 +22,8 @@
   --card-border: rgba(0, 0, 0, 0.06);
   --muted: #f4f4f5;
   --muted-foreground: #71717a;
+  /* [Accessibility] Focus ring colour mapped to CSS variable for consistency */
+  --focus-ring: #2563eb;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -35,6 +37,7 @@
     --card-border: rgba(255, 255, 255, 0.1);
     --muted: #1f1f22;
     --muted-foreground: #a1a1aa;
+    --focus-ring: #60a5fa;
   }
 }
 
@@ -45,6 +48,25 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* [Accessibility] Globally visible focus rings — never suppress outline entirely */
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* [Accessibility] Honour prefers-reduced-motion — disable Framer Motion and CSS transitions */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Subtle, tasteful glassmorphism */

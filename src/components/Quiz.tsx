@@ -1,9 +1,10 @@
+// [Accessibility] Fully keyboard-navigable quiz with aria-live announcements.
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useReducedMotion, motion, AnimatePresence } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export type Traits = {
   Adventure: number;
@@ -104,11 +105,12 @@ const questions = [
       { text: "The thrill of stepping out of your comfort zone.", traits: { Adventure: 2 } },
       { text: "Escaping stress and being pampered.", traits: { Luxury: 2 } },
     ],
-  }
+  },
 ];
 
 export default function Quiz() {
   const router = useRouter();
+  const shouldReduceMotion = useReducedMotion();
   const [currentStep, setCurrentStep] = useState(0);
   const [scores, setScores] = useState<Traits>({
     Adventure: 0, Food: 0, Culture: 0, Luxury: 0, Social: 0, Exploration: 0,
@@ -117,15 +119,15 @@ export default function Quiz() {
 
   const handleOptionSelect = (optionTraits: Partial<Traits>) => {
     setScores((prev) => {
-      const newScores = { ...prev };
+      const next = { ...prev };
       for (const [trait, value] of Object.entries(optionTraits)) {
-        newScores[trait as keyof Traits] += value;
+        next[trait as keyof Traits] += value;
       }
-      return newScores;
+      return next;
     });
 
     if (currentStep < questions.length - 1) {
-      setTimeout(() => setCurrentStep((prev) => prev + 1), 250);
+      setTimeout(() => setCurrentStep((prev) => prev + 1), shouldReduceMotion ? 0 : 250);
     } else {
       finishQuiz();
     }
@@ -133,106 +135,125 @@ export default function Quiz() {
 
   const finishQuiz = async () => {
     setIsCalculating(true);
-    
-    await new Promise(r => setTimeout(r, 1000));
-    
+
+    await new Promise((r) => setTimeout(r, shouldReduceMotion ? 0 : 1000));
+
     try {
       const response = await fetch("/api/analyze-dna", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ traits: scores })
+        body: JSON.stringify({ traits: scores }),
       });
       if (response.ok) {
-        const { analysis } = await response.json();
+        const { analysis } = await response.json() as { analysis: unknown };
         localStorage.setItem("travelAnalysis", JSON.stringify(analysis));
       }
     } catch (e) {
       console.error(e);
     }
-    
+
     localStorage.setItem("travelDNA", JSON.stringify(scores));
     router.push("/dashboard");
   };
 
   if (isCalculating) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+      // [Accessibility] aria-live announces calculation state to screen readers
+      <div
+        role="status"
+        aria-live="polite"
+        aria-label="Analyzing your Travel DNA"
+        className="flex flex-col items-center justify-center min-h-[60vh]"
+      >
         <motion.div
-          animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }}
+          animate={shouldReduceMotion ? {} : { scale: [1, 1.2, 1], rotate: [0, 180, 360] }}
           transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          aria-hidden="true"
           className="w-16 h-16 border-4 border-muted border-t-primary border-r-primary/50 rounded-full mb-8 shadow-xl"
         />
-        <motion.h2 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-2xl font-semibold text-foreground mb-3 tracking-tight"
-        >
+        <h2 className="text-2xl font-semibold text-foreground mb-3 tracking-tight">
           Analyzing Travel DNA
-        </motion.h2>
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-muted-foreground text-sm font-medium"
-        >
-          Consulting AI to generate your archetype...
-        </motion.p>
+        </h2>
+        <p className="text-muted-foreground text-sm font-medium">
+          Consulting AI to generate your archetype…
+        </p>
       </div>
     );
   }
 
   const question = questions[currentStep];
   const progress = ((currentStep) / questions.length) * 100;
+  const progressId = "quiz-progress";
 
   return (
     <div className="w-full max-w-2xl mx-auto mt-10">
-      {/* Premium Progress Bar */}
-      <div className="mb-12">
-        <div className="flex justify-between text-xs text-muted-foreground mb-3 font-semibold tracking-wide uppercase">
+      {/* [Accessibility] Progress bar with ARIA attributes */}
+      <div className="mb-12" role="group" aria-labelledby={progressId}>
+        <div
+          id={progressId}
+          className="flex justify-between text-xs text-muted-foreground mb-3 font-semibold tracking-wide uppercase"
+        >
           <span>Question {currentStep + 1} / {questions.length}</span>
-          <span>{Math.round(progress)}%</span>
+          <span aria-hidden="true">{Math.round(progress)}%</span>
         </div>
-        <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-          <motion.div 
+        <div
+          role="progressbar"
+          aria-valuenow={currentStep + 1}
+          aria-valuemin={1}
+          aria-valuemax={questions.length}
+          aria-label={`Question ${currentStep + 1} of ${questions.length}`}
+          className="h-1.5 w-full bg-muted rounded-full overflow-hidden"
+        >
+          <motion.div
             className="h-full bg-primary"
             initial={{ width: `${((currentStep) / questions.length) * 100}%` }}
             animate={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           />
         </div>
       </div>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentStep}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -20, opacity: 0 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="bg-card p-8 md:p-12 rounded-3xl border border-card-border shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
-        >
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8 leading-snug tracking-tight">
-            {question.question}
-          </h2>
+      {/* [Accessibility] aria-live polite so screen readers announce the new question */}
+      <div aria-live="polite" aria-atomic="true">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentStep}
+            initial={shouldReduceMotion ? {} : { y: 20, opacity: 0 }}
+            animate={shouldReduceMotion ? {} : { y: 0, opacity: 1 }}
+            exit={shouldReduceMotion ? {} : { y: -20, opacity: 0 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="bg-card p-8 md:p-12 rounded-3xl border border-card-border shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
+          >
+            {/* [Accessibility] fieldset + legend groups the question with its options */}
+            <fieldset>
+              <legend className="text-2xl md:text-3xl font-bold text-foreground mb-8 leading-snug tracking-tight">
+                {question.question}
+              </legend>
 
-          <div className="space-y-3">
-            {question.options.map((option, idx) => (
-              <motion.button
-                key={idx}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                onClick={() => handleOptionSelect(option.traits)}
-                className="w-full text-left p-5 rounded-2xl bg-card border border-card-border hover:border-muted-foreground/30 hover:bg-muted/50 transition-all group flex items-center justify-between"
-              >
-                <span className="text-foreground/90 font-medium text-lg leading-relaxed">
-                  {option.text}
-                </span>
-                <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors ml-4 flex-shrink-0" />
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
-      </AnimatePresence>
+              <div className="space-y-3" role="radiogroup" aria-label={question.question}>
+                {question.options.map((option, idx) => (
+                  <motion.button
+                    key={idx}
+                    whileHover={shouldReduceMotion ? {} : { scale: 1.01 }}
+                    whileTap={shouldReduceMotion ? {} : { scale: 0.99 }}
+                    onClick={() => handleOptionSelect(option.traits)}
+                    className="w-full text-left p-5 rounded-2xl bg-card border border-card-border hover:border-muted-foreground/30 hover:bg-muted/50 transition-all group flex items-center justify-between focus-visible:ring-2 focus-visible:ring-primary"
+                    aria-label={option.text}
+                  >
+                    <span className="text-foreground/90 font-medium text-lg leading-relaxed">
+                      {option.text}
+                    </span>
+                    <ChevronRight
+                      className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors ml-4 flex-shrink-0"
+                      aria-hidden="true"
+                    />
+                  </motion.button>
+                ))}
+              </div>
+            </fieldset>
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
