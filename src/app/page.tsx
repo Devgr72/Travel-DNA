@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, Compass, Layers, Zap, Globe, Heart, Shield, Star, Github, Twitter } from "lucide-react";
+import { ArrowRight, Compass, Layers, Zap, Globe, Heart, Shield, Star, MessageSquare, Code } from "lucide-react";
 import Image from "next/image";
 
 export default function Home() {
@@ -21,7 +21,7 @@ export default function Home() {
           className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-card-border bg-card/80 backdrop-blur-md mb-8 text-xs font-semibold tracking-wide uppercase text-muted-foreground shadow-sm hover:bg-card transition-colors cursor-pointer"
         >
           <Zap className="w-3.5 h-3.5 text-primary" />
-          <span>Travel DNA Engine 2.0 is live</span>
+          <span>Travel DNA Engine is live</span>
         </motion.div>
 
         <motion.h1 
@@ -81,7 +81,7 @@ export default function Home() {
               <h3 className="text-white text-2xl font-bold">Paris, France</h3>
             </div>
           </div>
-          <div className="relative h-[400px] md:h-[500px] rounded-3xl overflow-hidden group md:translate-y-12">
+          <div className="relative h-[400px] md:h-[500px] rounded-3xl overflow-hidden group">
             <Image src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=1000" alt="Adventure Nomad" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             <div className="absolute bottom-0 left-0 p-8">
@@ -162,8 +162,8 @@ export default function Home() {
             <div>
               <h4 className="font-semibold text-foreground mb-4">Connect</h4>
               <ul className="space-y-3 text-muted-foreground text-sm">
-                <li><Link href="#" className="flex items-center gap-2 hover:text-primary transition-colors"><Twitter className="w-4 h-4"/> Twitter</Link></li>
-                <li><Link href="#" className="flex items-center gap-2 hover:text-primary transition-colors"><Github className="w-4 h-4"/> GitHub</Link></li>
+                <li><Link href="#" className="flex items-center gap-2 hover:text-primary transition-colors"><MessageSquare className="w-4 h-4"/> Twitter</Link></li>
+                <li><Link href="#" className="flex items-center gap-2 hover:text-primary transition-colors"><Code className="w-4 h-4"/> GitHub</Link></li>
                 <li><Link href="#" className="flex items-center gap-2 hover:text-primary transition-colors"><Heart className="w-4 h-4"/> Built with Love</Link></li>
               </ul>
             </div>
