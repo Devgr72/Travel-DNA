@@ -97,6 +97,19 @@ describe("normalizeItinerary", () => {
     const noActivities = { days: [{ day: 1, title: "Day", activities: [] }] };
     expect(normalizeItinerary(noActivities)).toBeNull();
   });
+
+  it("returns null when an activity is missing the required time field", () => {
+    const missingTime = {
+      days: [
+        {
+          day: 1,
+          title: "Day",
+          activities: [{ description: "Walk", type: "Exploration" }],
+        },
+      ],
+    };
+    expect(normalizeItinerary(missingTime)).toBeNull();
+  });
 });
 
 describe("filterAffordableActivities", () => {
@@ -109,6 +122,12 @@ describe("filterAffordableActivities", () => {
     const result = filterAffordableActivities(day1, "Budget", 0);
     expect(result).toHaveLength(0);
   });
+
+  it("includes an activity whose cost exactly equals the remaining budget", () => {
+    const cost = estimateActivityCost(food, "Budget");
+    const result = filterAffordableActivities(day2, "Budget", cost);
+    expect(result).toHaveLength(1);
+  });
 });
 
 describe("getBusiestDay", () => {
@@ -119,5 +138,15 @@ describe("getBusiestDay", () => {
 
   it("returns null for an empty itinerary", () => {
     expect(getBusiestDay({ days: [] })).toBeNull();
+  });
+
+  it("returns the first day when two days have equal activity counts", () => {
+    const tiedItinerary: ItineraryData = {
+      days: [
+        { day: 1, title: "Day A", activities: [food, adventure] },
+        { day: 2, title: "Day B", activities: [food, logistics] },
+      ],
+    };
+    expect(getBusiestDay(tiedItinerary)?.day).toBe(1);
   });
 });

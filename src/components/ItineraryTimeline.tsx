@@ -1,7 +1,9 @@
 // [Problem Alignment] Shows satisfies badges, estimated costs, and constraint warnings per activity.
 // [Accessibility] Semantic <ol> timeline; aria-label on each activity card.
+// [Efficiency] ActivityCard and ItineraryTimeline wrapped in memo to skip re-renders on unrelated parent state.
 "use client";
 
+import { memo } from "react";
 import { useReducedMotion, motion } from "framer-motion";
 import {
   MapPin,
@@ -35,7 +37,7 @@ function ActivityIcon({ type }: { type: string }) {
   );
 }
 
-function ActivityCard({ activity }: { activity: Activity }) {
+const ActivityCard = memo(function ActivityCard({ activity }: { activity: Activity }) {
   return (
     <article aria-label={`${activity.time} — ${activity.type}: ${activity.description}`}>
       <div className="flex gap-4 md:gap-5">
@@ -75,9 +77,9 @@ function ActivityCard({ activity }: { activity: Activity }) {
               aria-label="Preferences satisfied by this activity"
               className="flex flex-wrap gap-1.5 mt-3 list-none p-0"
             >
-              {activity.satisfies.map((tag, i) => (
+              {activity.satisfies.map((tag) => (
                 <li
-                  key={i}
+                  key={tag}
                   className="text-[10px] px-2 py-0.5 bg-primary/8 text-primary rounded-full border border-primary/20 font-medium"
                 >
                   ✓ {tag}
@@ -105,9 +107,9 @@ function ActivityCard({ activity }: { activity: Activity }) {
       </div>
     </article>
   );
-}
+});
 
-export default function ItineraryTimeline({ data }: { data: ItineraryData }) {
+const ItineraryTimeline = memo(function ItineraryTimeline({ data }: { data: ItineraryData }) {
   const shouldReduceMotion = useReducedMotion();
 
   if (!data?.days?.length) {
@@ -120,7 +122,7 @@ export default function ItineraryTimeline({ data }: { data: ItineraryData }) {
       className="relative border-l border-card-border ml-4 md:ml-8 pb-12 list-none p-0"
     >
       {data.days.map((day, dayIdx) => (
-        <li key={dayIdx} className="mb-14 relative">
+        <li key={day.day} className="mb-14 relative">
           {/* Day Marker */}
           <div
             aria-hidden="true"
@@ -145,7 +147,7 @@ export default function ItineraryTimeline({ data }: { data: ItineraryData }) {
                   initial={shouldReduceMotion ? {} : { opacity: 0, y: 10 }}
                   animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
                   transition={{ delay: dayIdx * 0.1 + actIdx * 0.05, ease: [0.16, 1, 0.3, 1] }}
-                  key={actIdx}
+                  key={`${activity.time}-${activity.type}`}
                   className="relative group"
                 >
                   {actIdx !== day.activities.length - 1 && (
@@ -163,4 +165,6 @@ export default function ItineraryTimeline({ data }: { data: ItineraryData }) {
       ))}
     </ol>
   );
-}
+});
+
+export default ItineraryTimeline;

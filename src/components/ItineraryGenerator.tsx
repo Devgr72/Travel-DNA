@@ -1,8 +1,9 @@
 // [Accessibility] All inputs have id + htmlFor label association.
 // [Problem Alignment] Constraints inputs (budget cap, mobility, dietary, mustAvoid).
+// [Efficiency] Wrapped in memo — only re-renders when isLoading changes or onGenerate reference changes.
 "use client";
 
-import { useState } from "react";
+import { memo, useState } from "react";
 import { useReducedMotion, motion } from "framer-motion";
 import { Plane, Calendar, DollarSign, Wand2, ChevronDown } from "lucide-react";
 import type { Constraints } from "@/lib/schema";
@@ -19,7 +20,10 @@ type ItineraryGeneratorProps = {
   isLoading: boolean;
 };
 
-export default function ItineraryGenerator({ onGenerate, isLoading }: ItineraryGeneratorProps) {
+const ItineraryGenerator = memo(function ItineraryGenerator({
+  onGenerate,
+  isLoading,
+}: ItineraryGeneratorProps) {
   const shouldReduceMotion = useReducedMotion();
   const [destination, setDestination] = useState("");
   const [duration, setDuration] = useState("");
@@ -277,4 +281,6 @@ export default function ItineraryGenerator({ onGenerate, isLoading }: ItineraryG
       </form>
     </div>
   );
-}
+});
+
+export default ItineraryGenerator;

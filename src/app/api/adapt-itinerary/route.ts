@@ -1,6 +1,9 @@
 // [Security] GEMINI_API_KEY read only inside this serverless handler — never client-side.
 // [Efficiency] Re-plans only the itinerary portion — does not regenerate wowFactor or personality.
+// No caching here: context strings are always unique real-world changes.
 import { GoogleGenerativeAI } from "@google/generative-ai";
+
+export const dynamic = "force-dynamic";
 import { headers } from "next/headers";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { secureJson } from "@/lib/securityHeaders";

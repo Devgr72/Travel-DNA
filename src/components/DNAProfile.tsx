@@ -1,8 +1,9 @@
 // [Accessibility] aria-live announces DNA analysis results when they load.
 // [Testing] computeRadarData is a pure function from src/lib/dna.ts.
+// [Efficiency] Wrapped in memo — no props, so parent state changes never cause re-renders.
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { useReducedMotion, motion } from "framer-motion";
 import {
   Radar,
@@ -26,7 +27,7 @@ type ProfileData = {
   analysis: DNAAnalysis | null;
 };
 
-export default function DNAProfile() {
+const DNAProfile = memo(function DNAProfile() {
   const shouldReduceMotion = useReducedMotion();
   // Single state object — one setState call in useEffect avoids cascading renders.
   const [profile, setProfile] = useState<ProfileData>({ dna: null, analysis: null });
@@ -36,7 +37,6 @@ export default function DNAProfile() {
     const rawAnalysis = localStorage.getItem("travelAnalysis");
     // localStorage is unavailable during SSR, so this useEffect hydration is required.
     // The single batched setState avoids multiple render cascades.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setProfile({
       dna: rawDna ? (JSON.parse(rawDna) as Traits) : null,
       analysis: rawAnalysis ? (JSON.parse(rawAnalysis) as DNAAnalysis) : null,
@@ -93,9 +93,9 @@ export default function DNAProfile() {
 
           {analysis?.strengths && (
             <ul className="flex flex-wrap gap-2 mt-6 list-none p-0" aria-label="Travel strengths">
-              {analysis.strengths.map((strength, idx) => (
+              {analysis.strengths.map((strength) => (
                 <li
-                  key={idx}
+                  key={strength}
                   className="px-3 py-1 bg-muted text-foreground text-xs font-semibold rounded-full border border-card-border"
                 >
                   {strength}
@@ -141,4 +141,6 @@ export default function DNAProfile() {
       </div>
     </motion.div>
   );
-}
+});
+
+export default DNAProfile;

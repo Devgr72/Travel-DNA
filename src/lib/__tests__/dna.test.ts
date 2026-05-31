@@ -46,6 +46,16 @@ describe("normalizeDnaScores", () => {
     const result = normalizeDnaScores(zero);
     expect(Object.values(result).every((v) => v === 0)).toBe(true);
   });
+
+  it("returns exact min boundary value unchanged", () => {
+    const result = normalizeDnaScores({ ...baseTrait, Social: -10 });
+    expect(result.Social).toBe(-10);
+  });
+
+  it("returns exact max boundary value unchanged", () => {
+    const result = normalizeDnaScores({ ...baseTrait, Culture: 20 });
+    expect(result.Culture).toBe(20);
+  });
 });
 
 describe("computeRadarData", () => {
@@ -123,6 +133,22 @@ describe("scoreTraitAlignment", () => {
   it("is case-insensitive for activity type", () => {
     expect(scoreTraitAlignment(baseTrait, "FOOD")).toBe(scoreTraitAlignment(baseTrait, "food"));
   });
+
+  it("maps Relaxation type to Luxury trait", () => {
+    const highLuxury: Traits = { ...baseTrait, Luxury: 20 };
+    const lowLuxury: Traits = { ...baseTrait, Luxury: 0 };
+    expect(scoreTraitAlignment(highLuxury, "relaxation")).toBeGreaterThan(
+      scoreTraitAlignment(lowLuxury, "relaxation"),
+    );
+  });
+
+  it("maps Logistics type to Exploration trait", () => {
+    const highExploration: Traits = { ...baseTrait, Exploration: 20 };
+    const lowExploration: Traits = { ...baseTrait, Exploration: 0 };
+    expect(scoreTraitAlignment(highExploration, "logistics")).toBeGreaterThan(
+      scoreTraitAlignment(lowExploration, "logistics"),
+    );
+  });
 });
 
 describe("getTopTraits", () => {
@@ -138,5 +164,9 @@ describe("getTopTraits", () => {
 
   it("returns all traits when n >= trait count", () => {
     expect(getTopTraits(baseTrait, 10)).toHaveLength(6);
+  });
+
+  it("returns an empty array when n is 0", () => {
+    expect(getTopTraits(baseTrait, 0)).toHaveLength(0);
   });
 });

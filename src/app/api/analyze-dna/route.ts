@@ -1,9 +1,13 @@
 // [Security] GEMINI_API_KEY read only inside this serverless handler — never client-side.
+// [Efficiency] Identical trait vectors are served from an in-process cache (5 min TTL).
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { headers } from "next/headers";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { secureJson } from "@/lib/securityHeaders";
 import { AnalyzeDnaRequestSchema, DnaAnalysisResponseSchema } from "@/lib/schema";
+import { cacheGet, cacheSet } from "@/lib/responseCache";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   // [Security] Rate limiting
@@ -29,6 +33,13 @@ export async function POST(req: Request) {
     );
   }
   const { traits } = parseResult.data;
+
+  // [Efficiency] Serve cache hit without calling Gemini
+  const cacheKey = `analyze-dna:${JSON.stringify(traits)}`;
+  const cached = cacheGet(cacheKey);
+  if (cached !== undefined) {
+    return secureJson(cached);
+  }
 
   if (!process.env.GEMINI_API_KEY) {
     return secureJson({
@@ -71,6 +82,8 @@ Return ONLY a valid JSON object — no markdown, no explanation:
       return secureJson({ error: "AI returned unexpected format" }, { status: 502 });
     }
 
+    // [Efficiency] Cache validated result for subsequent identical requests
+    cacheSet(cacheKey, validated.data);
     return secureJson(validated.data);
   } catch (error) {
     console.error("Error analyzing DNA:", error);

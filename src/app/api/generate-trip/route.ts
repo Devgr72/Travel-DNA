@@ -1,11 +1,15 @@
 // [Security] GEMINI_API_KEY read only inside this serverless handler — never client-side.
 // [Problem Alignment] Constraints (budget, mobility, dietary, mustAvoid) are woven into the prompt.
+// [Efficiency] Identical inputs are served from an in-process cache (5 min TTL).
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { headers } from "next/headers";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { secureJson } from "@/lib/securityHeaders";
 import { GenerateTripRequestSchema, TripDataResponseSchema } from "@/lib/schema";
 import type { Constraints } from "@/lib/schema";
+import { cacheGet, cacheSet } from "@/lib/responseCache";
+
+export const dynamic = "force-dynamic";
 
 function buildConstraintsClause(c: Constraints | undefined): string {
   if (!c) return "";
@@ -51,6 +55,13 @@ export async function POST(req: Request) {
     );
   }
   const { destination, duration, budget, traits, constraints } = parseResult.data;
+
+  // [Efficiency] Serve cache hit without calling Gemini
+  const cacheKey = `generate-trip:${JSON.stringify({ destination, duration, budget, traits, constraints })}`;
+  const cached = cacheGet(cacheKey);
+  if (cached !== undefined) {
+    return secureJson(cached);
+  }
 
   if (!process.env.GEMINI_API_KEY) {
     return secureJson({
@@ -168,7 +179,10 @@ Return ONLY a valid JSON object matching this exact schema (no markdown):
       return secureJson({ error: "AI returned unexpected format" }, { status: 502 });
     }
 
-    return secureJson({ tripData: validated.data });
+    // [Efficiency] Cache validated result for subsequent identical requests
+    const responsePayload = { tripData: validated.data };
+    cacheSet(cacheKey, responsePayload);
+    return secureJson(responsePayload);
   } catch (error) {
     console.error("Error generating trip:", error);
     return secureJson({ error: "Failed to generate trip" }, { status: 500 });

@@ -267,9 +267,9 @@ export default function Quiz() {
               </legend>
 
               <div className="space-y-3" role="radiogroup" aria-label={question.question}>
-                {question.options.map((option, idx) => (
+                {question.options.map((option) => (
                   <motion.button
-                    key={idx}
+                    key={option.text}
                     whileHover={shouldReduceMotion ? {} : { scale: 1.01 }}
                     whileTap={shouldReduceMotion ? {} : { scale: 0.99 }}
                     onClick={() => handleOptionSelect(option.traits)}

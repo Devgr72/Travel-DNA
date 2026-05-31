@@ -117,8 +117,8 @@ export default function AdaptiveItinerary({ initialTripData }: AdaptiveItinerary
             </h3>
           </div>
           <ul className="space-y-4 flex-1 list-none p-0">
-            {tripData.wowFactor?.hiddenGems?.map((gem, idx) => (
-              <li key={idx} className="border-l-2 border-amber-500/30 pl-3">
+            {tripData.wowFactor?.hiddenGems?.map((gem) => (
+              <li key={gem.name} className="border-l-2 border-amber-500/30 pl-3">
                 <h4 className="text-sm font-bold text-foreground">{gem.name}</h4>
                 <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                   {gem.description}
@@ -139,8 +139,8 @@ export default function AdaptiveItinerary({ initialTripData }: AdaptiveItinerary
             </h3>
           </div>
           <ul className="space-y-4 flex-1 list-none p-0">
-            {tripData.wowFactor?.touristTrapsToAvoid?.map((trap, idx) => (
-              <li key={idx} className="border-l-2 border-red-500/30 pl-3">
+            {tripData.wowFactor?.touristTrapsToAvoid?.map((trap) => (
+              <li key={trap.name} className="border-l-2 border-red-500/30 pl-3">
                 <h4 className="text-sm font-bold text-foreground">{trap.name}</h4>
                 <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{trap.reason}</p>
               </li>
@@ -170,9 +170,9 @@ export default function AdaptiveItinerary({ initialTripData }: AdaptiveItinerary
           role="group"
           aria-label="Simulate weather change"
         >
-          {weatherSimulations.map((sim, idx) => (
+          {weatherSimulations.map((sim) => (
             <button
-              key={idx}
+              key={sim.label}
               onClick={() => handleAdapt(sim.context)}
               disabled={isAdapting}
               aria-label={`Simulate ${sim.label}: ${sim.context}`}
