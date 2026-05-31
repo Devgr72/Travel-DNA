@@ -24,14 +24,14 @@
 ### The Command Center & Travel DNA Analysis
 The intelligent dashboard breaks down your behavioral profile, actively curates hidden gems you'll love, and flags tourist traps you'll hate based strictly on your DNA. 
 
-![Travel DNA Dashboard Analysis](./public/screenshots/dashboard-analysis.png)
-*(Note: Place your first screenshot here as `public/screenshots/dashboard-analysis.png`)*
+![Travel DNA Dashboard Analysis](./public/screenshots/dashboard-analysis.jpg)
+*(Note: Place your first screenshot here as `public/screenshots/dashboard-analysis.jpg`)*
 
 ### The Adaptive Timeline
 Our AI generates a structured, day-by-day JSON timeline. When environmental factors change (like sudden rain), the Adaptive Engine recalculates the timeline seamlessly.
 
-![Travel DNA Timeline & Adaptation](./public/screenshots/dashboard-timeline.png)
-*(Note: Place your second screenshot here as `public/screenshots/dashboard-timeline.png`)*
+![Travel DNA Timeline & Adaptation](./public/screenshots/dashboard-timeline.jpg)
+*(Note: Place your second screenshot here as `public/screenshots/dashboard-timeline.jpg`)*
 
 ---
 
